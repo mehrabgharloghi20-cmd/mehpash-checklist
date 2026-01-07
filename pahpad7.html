@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>چک‌لیست سمپاشی با پهپاد – mehpash</title>
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#16a34a" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="mehpash Drone" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <style>
+        body {
+            direction: rtl;
+            text-align: right;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 18px 0 20px; /* جا برای نوارهای تبلیغ بالا/پایین */
+            font-size: 16px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* واترمارک پس‌زمینه با تبلیغ mehpash */
+        body::before {
+            content: "mehpash  |  09189377011 - 09387393550  |  Instagram: @mehpash30";
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: rgba(15, 23, 42, 0.04);
+            white-space: pre-wrap;
+            text-align: center;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* نوار تبلیغ بالا/پایین صفحه */
+        .brand-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            font-size: 11px;
+            color: #4b5563;
+            background: rgba(249, 250, 251, 0.95);
+            border-bottom: 1px solid #e5e7eb;
+            padding: 2px 8px 3px;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-bar.bottom {
+            top: auto;
+            bottom: 0;
+            border-bottom: none;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .brand-bar span {
+            white-space: nowrap;
+        }
+
+        .brand-highlight {
+            font-weight: 600;
+            color: #16a34a;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 10px auto 24px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            padding: 14px 12px 18px;
+            position: relative;
+            z-index: 1; /* روی واترمارک */
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #1f2933;
+        }
+
+        .project-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #f0f4ff;
+        }
+
+        .project-box label {
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .project-box input {
+            flex: 1 1 200px;
+            min-width: 150px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid #cbd5f5;
+            font-size: 0.9rem;
+        }
+
+        .project-box span {
+            font-size: 0.78rem;
+            color: #6b7280;
+        }
+
+        .global-progress {
+            font-size: 0.85rem;
+            color: #4b5563;
+            margin-bottom: 4px;
+        }
+
+        .global-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .global-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #0ea5e9, #6366f1);
+            border-radius: 999px;
+            transition: width 0.2s ease-out;
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0 6px;
+        }
+
+        .step-title-main {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .step-subtitle {
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        .step-progress {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 6px 0 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border-radius: 999px;
+            transition: width 0.2s ease-out;
+        }
+
+        /* کارت‌های گزینه‌ها (بزرگ و خلاصه برای موبایل) */
+        .option-card {
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            padding: 12px 14px;
+            margin: 5px 0;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            background: #fff;
+            transition: background 0.15s ease-out, border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+        }
+
+        .option-card:hover {
+            border-color: #cbd5f5;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+        }
+
+        .option-card.selected {
+            background: #dcfce7;
+            border-color: #16a34a;
+            box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.3);
+        }
+
+        .option-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            border: 2px solid #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #16a34a;
+            flex-shrink: 0;
+            background: #fff;
+        }
+
+        .option-card.selected .option-check {
+            border-color: #16a34a;
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .option-text {
+            flex: 1;
+            color: #111827;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .item-delete {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            font-size: 18px;
+            padding: 0 4px;
+            cursor: pointer;
+        }
+
+        .item-delete:hover {
+            color: #ef4444;
+        }
+
+        .btn-add-item {
+            margin-top: 8px;
+            background: #ecfdf3;
+            color: #15803d;
+            font-size: 0.95rem;
+            padding: 7px 11px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-add-item:hover {
+            background: #bbf7d0;
+        }
+
+        .actions {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-prev {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-next {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .btn-next:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .btn-reset {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .btn-print {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .btn-reset:hover {
+            background: #fecaca;
+        }
+
+        .btn-print:hover {
+            background: #bae6fd;
+        }
+
+        .step-hint {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        /* صفحه آماده پرواز */
+        .flight-screen {
+            text-align: center;
+            padding: 24px 8px 10px;
+        }
+
+        .flight-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #16a34a;
+            margin-bottom: 8px;
+        }
+
+        .flight-subtitle {
+            font-size: 0.95rem;
+            color: #374151;
+            margin-bottom: 14px;
+        }
+
+        .flight-note {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .flight-btn {
+            margin-top: 10px;
+            background: #f97316;
+            color: #fff;
+            font-size: 1rem;
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .flight-btn:active {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 6px;
+                padding: 10px 8px 14px;
+                border-radius: 10px;
+            }
+
+            h1 {
+                font-size: 1.1rem;
+            }
+
+            .option-card {
+                font-size: 1.02rem;
+                padding: 12px 14px;
+            }
+
+            .option-text {
+                font-size: 1.02rem;
+                line-height: 1.7;
+            }
+
+            button {
+                font-size: 0.95rem;
+                padding: 8px 12px;
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                margin: 0;
+                border-radius: 0;
+            }
+            .actions,
+            .btn-add-item,
+            .item-delete,
+            .project-box,
+            .brand-bar {
+                display: none !important;
+            }
+            body::before {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- نوار تبلیغ بالای صفحه -->
+<div class="brand-bar top">
+    <span class="brand-highlight">mehpash</span>
+    <span>سمپاشی هوشمند با پهپاد</span>
+    <span>☎ 09189377011 - 09387393550</span>
+    <span>اینستاگرام: @mehpash30</span>
+</div>
+
+<!-- نوار تبلیغ پایین صفحه -->
+<div class="brand-bar bottom">
+    <span>توسعه و اجرا: <span class="brand-highlight">mehpash</span></span>
+    <span>تماس: 09189377011 - 09387393550</span>
+    <span>@mehpash30</span>
+</div>
+
+<div class="container">
+    <h1>چک‌لیست مرحله‌ای سمپاشی با پهپاد – mehpash</h1>
+
+    <div class="project-box">
+        <label for="projectName">نام پروژه / مزرعه:</label>
+        <input id="projectName" type="text" placeholder="مثال: مزرعه گندم – قطعه شمالی" />
+        <span>روی همین دستگاه ذخیره می‌شود.</span>
+    </div>
+
+    <div class="global-progress">
+        پیشرفت کلی: <span id="globalProgressText">0%</span>
+    </div>
+    <div class="global-progress-bar">
+        <div class="global-progress-fill" id="globalProgressFill"></div>
+    </div>
+
+    <div id="stepContainer"></div>
+
+    <div class="actions">
+        <div class="nav-buttons" id="navButtons">
+            <button id="prevBtn" class="btn-prev" type="button">مرحله قبلی</button>
+            <button id="nextBtn" class="btn-next" type="button">مرحله بعد</button>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn-reset" id="resetBtn" type="button">شروع دوباره / پاک تیک‌ها</button>
+            <button class="btn-print" id="printBtn" type="button">چاپ / PDF</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // داده‌ها: هر گروه = یک مرحله، با متن خلاصه
+    const defaultTemplate = [
+        // قبل از شروع
+        {
+            sectionId: "before",
+            sectionTitle: "قبل از شروع عملیات",
+            groupId: "planning",
+            groupTitle: "۱) برنامه‌ریزی و ایمنی کلی",
+            items: [
+                "مجوزها و محدودیت پرواز منطقه",
+                "وضعیت هوا (باد، باران، دما، رطوبت)",
+                "جهت و سرعت باد / رانش سم",
+                "خط سیر پرواز و موانع (سیم، درخت، ساختمان)",
+                "ایمن‌سازی اطراف محل پرواز",
+                "ماسک، دستکش، عینک و لباس کار"
+            ]
+        },
+        {
+            sectionId: "before",
+            sectionTitle: "قبل از شروع عملیات",
+            groupId: "airframe",
+            groupTitle: "۲) بدنه و ملخ‌ها",
+            items: [
+                "بدنه و بازوها (ترک، شکستگی، لقی)",
+                "سالم بودن ملخ‌ها (ترک، لب‌پریدگی)",
+                "سفت بودن پیچ ملخ‌ها",
+                "آزاد بودن چرخش موتورها",
+                "تست کوتاه روی زمین (صدای غیرعادی)"
+            ]
+        },
+        {
+            sectionId: "before",
+            sectionTitle: "قبل از شروع عملیات",
+            groupId: "flightSystem",
+            groupTitle: "۳) سیستم پروازی",
+            items: [
+                "سلامت ریموت و گوشی/تبلت",
+                "اتصال پهپاد به ریموت / سیگنال",
+                "GPS / RTK و تعداد ماهواره‌ها",
+                "نیاز به کالیبره قطب‌نما",
+                "تنظیم RTH (نقطه و ارتفاع بازگشت)",
+                "چک آپدیت نرم‌افزار و فریم‌ویر"
+            ]
+        },
+        {
+            sectionId: "before",
+            sectionTitle: "قبل از شروع عملیات",
+            groupId: "battery",
+            groupTitle: "۴) باتری‌ها و برق",
+            items: [
+                "شارژ کامل باتری‌های پرواز",
+                "شارژ ریموت و گوشی/تبلت",
+                "چک ظاهری باتری‌ها (بادکردگی، نشتی)",
+                "تمیز بودن سوکت‌ها و کانکتورها",
+                "نوبت‌بندی استفاده باتری‌ها",
+                "محل امن برای باتری‌های یدک"
+            ]
+        },
+        {
+            sectionId: "before",
+            sectionTitle: "قبل از شروع عملیات",
+            groupId: "spraySystem",
+            groupTitle: "۵) سیستم سمپاشی",
+            items: [
+                "مخزن و فیلترها تمیز و بدون رسوب",
+                "سلامت شیلنگ‌ها و اتصالات",
+                "انتخاب نازل مناسب",
+                "باز و تمیز بودن نازل‌ها",
+                "تست پمپ و نشتی با آب",
+                "تست الگوی پاشش روی زمین",
+                "تهیه محلول با دوز صحیح",
+                "ثبت نوع سم/کود، دوز و تاریخ"
+            ]
+        },
+        {
+            sectionId: "before",
+            sectionTitle: "قبل از شروع عملیات",
+            groupId: "missionSetup",
+            groupTitle: "۶) تنظیم مأموریت",
+            items: [
+                "تعریف مرز مزرعه روی نقشه",
+                "تنظیم ارتفاع پرواز",
+                "تنظیم سرعت و دبی پاشش",
+                "فاصله خطوط پروازی (Overlap)",
+                "جهت خطوط نسبت به باد",
+                "پرواز تست کوتاه",
+                "فعال بودن ثبت داده‌ها"
+            ]
+        },
+        {
+            sectionId: "before",
+            sectionTitle: "قبل از شروع عملیات",
+            groupId: "fieldReady",
+            groupTitle: "۷) محل پرواز و تیم",
+            items: [
+                "محل صاف برای برخاست و فرود",
+                "دور کردن افراد و حیوانات",
+                "آماده بودن ظروف و قیف اختلاط",
+                "آب و مواد خنثی‌کننده در دسترس",
+                "هماهنگی با کمک‌کار",
+                "جعبه کمک‌های اولیه و شماره اضطراری"
+            ]
+        },
+        // بعد از پایان
+        {
+            sectionId: "after",
+            sectionTitle: "بعد از پایان عملیات",
+            groupId: "postSafety",
+            groupTitle: "۱) ایمنی و پاک‌سازی",
+            items: [
+                "جلوگیری از ورود افراد بدون حفاظت",
+                "تخلیه ایمن باقیمانده محلول",
+                "شست‌وشوی مخزن و شیلنگ و نازل",
+                "پاشیدن آب شست‌وشو روی همان مزرعه",
+                "شست‌وشوی ماسک و لباس کار",
+                "جمع‌آوری ظروف خالی سم"
+            ]
+        },
+        {
+            sectionId: "after",
+            sectionTitle: "بعد از پایان عملیات",
+            groupId: "postAirframe",
+            groupTitle: "۲) چک پهپاد بعد پرواز",
+            items: [
+                "بدنه، بازو و پایه فرود (آسیب، ضربه)",
+                "ملخ‌ها (آسیب بعد برخورد)",
+                "تمیز کردن بدنه و ملخ از سم و خاک",
+                "چک پیچ‌ها و اتصالات",
+                "یادداشت خطاها و هشدارها"
+            ]
+        },
+        {
+            sectionId: "after",
+            sectionTitle: "بعد از پایان عملیات",
+            groupId: "postBattery",
+            groupTitle: "۳) باتری‌ها بعد از کار",
+            items: [
+                "جدا کردن باتری‌ها از پهپاد و ریموت",
+                "چک دمای باتری‌ها",
+                "نگهداری در جای خنک و دور از آفتاب",
+                "تنظیم شارژ روی Storage (در صورت نیاز)",
+                "ثبت تقریبی سیکل هر باتری",
+                "چک دوباره بادکردگی و نشتی"
+            ]
+        },
+        {
+            sectionId: "after",
+            sectionTitle: "بعد از پایان عملیات",
+            groupId: "postSpraySystem",
+            groupTitle: "۴) سرویس سیستم سمپاشی",
+            items: [
+                "باز کردن و تمیز کردن فیلترها",
+                "شست‌وشوی کامل نازل‌ها",
+                "خشک کردن و بستن دوباره قطعات لازم",
+                "روغن‌کاری اورینگ‌ها (در صورت نیاز)",
+                "چک نشتی با کمی آب بعد از بستن"
+            ]
+        },
+        {
+            sectionId: "after",
+            sectionTitle: "بعد از پایان عملیات",
+            groupId: "docs",
+            groupTitle: "۵) ثبت گزارش کار",
+            items: [
+                "نام مزرعه، تاریخ، محصول و مساحت",
+                "نوع سم/کود، دوز و حجم مصرفی",
+                "زمان شروع/پایان و تعداد پروازها",
+                "شرایط هوا (باد، دما)",
+                "مشکلات و خرابی‌های پیش‌آمده",
+                "نکات برای بهبود دفعات بعد"
+            ]
+        },
+        {
+            sectionId: "after",
+            sectionTitle: "بعد از پایان عملیات",
+            groupId: "endOfDay",
+            groupTitle: "۶) جمع‌بندی روز",
+            items: [
+                "خاموش کردن کامل همه تجهیزات",
+                "جمع کردن ایستگاه و مرتب‌سازی محل",
+                "گذاشتن پهپاد در کیس مناسب",
+                "شارژ باتری‌های موردنیاز روز بعد",
+                "بررسی نیاز به سرویس دوره‌ای",
+                "چک موجودی سم/کود و سفارش در صورت نیاز"
+            ]
+        }
+    ];
+
+    const STORAGE_KEY = "mehpash_drone_spraying_steps_split_pwa_v1";
+    const PROJECT_KEY = "mehpash_drone_spraying_project_name_v1";
+
+    let state = {
+        steps: [],
+        checks: {},
+        phase: "pre",        // "pre" | "flight" | "post"
+        currentPreIndex: 0,
+        currentPostIndex: 0
+    };
+
+    function generateItemId() {
+        return "item-" + Date.now().toString(36) + "-" + Math.random().toString(36).substr(2, 5);
+    }
+
+    function buildInitialSteps() {
+        return defaultTemplate.map((step, index) => ({
+            id: "step-" + (index + 1),
+            sectionId: step.sectionId,
+            sectionTitle: step.sectionTitle,
+            groupId: step.groupId,
+            groupTitle: step.groupTitle,
+            items: step.items.map(text => ({
+                id: generateItemId(),
+                text
+            }))
+        }));
+    }
+
+    function loadState() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                state = JSON.parse(saved);
+            }
+        } catch (e) {
+            state = { steps: [], checks: {}, phase: "pre", currentPreIndex: 0, currentPostIndex: 0 };
+        }
+
+        if (!state || !Array.isArray(state.steps) || state.steps.length === 0) {
+            state = {
+                steps: buildInitialSteps(),
+                checks: {},
+                phase: "pre",
+                currentPreIndex: 0,
+                currentPostIndex: 0
+            };
+            saveState();
+        }
+
+        if (!state.checks) state.checks = {};
+        if (!state.phase) state.phase = "pre";
+        if (typeof state.currentPreIndex !== "number") state.currentPreIndex = 0;
+        if (typeof state.currentPostIndex !== "number") state.currentPostIndex = 0;
+
+        const savedProject = localStorage.getItem(PROJECT_KEY);
+        if (savedProject) {
+            document.getElementById("projectName").value = savedProject;
+        }
+    }
+
+    function saveState() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+    }
+
+    function saveProjectName() {
+        const name = document.getElementById("projectName").value || "";
+        try {
+            localStorage.setItem(PROJECT_KEY, name);
+        } catch (e) {}
+    }
+
+    function getPreSteps() {
+        return state.steps.filter(s => s.sectionId === "before");
+    }
+
+    function getPostSteps() {
+        return state.steps.filter(s => s.sectionId === "after");
+    }
+
+    function getCurrentStep() {
+        if (state.phase === "pre") {
+            const list = getPreSteps();
+            return list[state.currentPreIndex] || null;
+        } else if (state.phase === "post") {
+            const list = getPostSteps();
+            return list[state.currentPostIndex] || null;
+        }
+        return null;
+    }
+
+    function getStepPosition() {
+        if (state.phase === "pre") {
+            const list = getPreSteps();
+            return { index: state.currentPreIndex, total: list.length };
+        } else if (state.phase === "post") {
+            const list = getPostSteps();
+            return { index: state.currentPostIndex, total: list.length };
+        }
+        return { index: 0, total: 0 };
+    }
+
+    function isStepComplete(step) {
+        if (!step || !step.items.length) return true;
+        return step.items.every(item => !!state.checks[item.id]);
+    }
+
+    function getStepStats(step) {
+        if (!step) return { done: 0, total: 0 };
+        let total = step.items.length;
+        let done = 0;
+        step.items.forEach(item => {
+            if (state.checks[item.id]) done++;
+        });
+        return { done, total };
+    }
+
+    function updateGlobalProgress() {
+        let totalItems = 0;
+        let doneItems = 0;
+
+        state.steps.forEach(step => {
+            step.items.forEach(item => {
+                totalItems++;
+                if (state.checks[item.id]) doneItems++;
+            });
+        });
+
+        const percent = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
+
+        document.getElementById("globalProgressText").textContent = percent + "%";
+        document.getElementById("globalProgressFill").style.width = percent + "%";
+    }
+
+    function addItemToCurrentStep() {
+        const step = getCurrentStep();
+        if (!step) return;
+        const text = prompt("متن مورد جدید در این مرحله را وارد کن (کوتاه):");
+        if (!text) return;
+
+        step.items.push({
+            id: generateItemId(),
+            text: text.trim()
+        });
+
+        saveState();
+        render();
+    }
+
+    function deleteItem(stepId, itemId) {
+        if (!confirm("این مورد حذف شود؟")) return;
+
+        const step = state.steps.find(s => s.id === stepId);
+        if (!step) return;
+
+        step.items = step.items.filter(item => item.id !== itemId);
+        delete state.checks[itemId];
+
+        saveState();
+        render();
+    }
+
+    function nextStep() {
+        if (state.phase === "pre") {
+            const list = getPreSteps();
+            const step = list[state.currentPreIndex];
+            if (!isStepComplete(step)) {
+                alert("اول همه موارد این مرحله را انجام و سبز کن، بعد می‌توانی بروی مرحله بعد.");
+                return;
+            }
+            if (state.currentPreIndex < list.length - 1) {
+                state.currentPreIndex++;
+            } else {
+                state.phase = "flight"; // همه قبل از شروع تمام شده
+            }
+        } else if (state.phase === "post") {
+            const list = getPostSteps();
+            const step = list[state.currentPostIndex];
+            if (!isStepComplete(step)) {
+                alert("اول همه موارد این مرحله را انجام و سبز کن، بعد می‌توانی بروی مرحله بعد.");
+                return;
+            }
+            if (state.currentPostIndex < list.length - 1) {
+                state.currentPostIndex++;
+            }
+        }
+        saveState();
+        render();
+    }
+
+    function prevStep() {
+        if (state.phase === "pre") {
+            if (state.currentPreIndex > 0) {
+                state.currentPreIndex--;
+                saveState();
+                render();
+            }
+        } else if (state.phase === "post") {
+            if (state.currentPostIndex > 0) {
+                state.currentPostIndex--;
+                saveState();
+                render();
+            }
+        }
+    }
+
+    function endFlight() {
+        state.phase = "post";
+        state.currentPostIndex = 0;
+        saveState();
+        render();
+    }
+
+    function resetChecks() {
+        if (!confirm("همه تیک‌ها پاک و مراحل از اول (قبل از شروع) شروع شود؟")) return;
+        state.checks = {};
+        state.phase = "pre";
+        state.currentPreIndex = 0;
+        state.currentPostIndex = 0;
+        saveState();
+        render();
+    }
+
+    function renderStepScreen() {
+        const container = document.getElementById("stepContainer");
+        container.innerHTML = "";
+
+        const step = getCurrentStep();
+        if (!step) return;
+
+        const pos = getStepPosition();
+        const stepNumber = pos.index + 1;
+        const totalSteps = pos.total;
+
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "step-header";
+
+        const titleWrap = document.createElement("div");
+        const titleMain = document.createElement("div");
+        titleMain.className = "step-title-main";
+        titleMain.textContent = `مرحله ${stepNumber} از ${totalSteps}`;
+
+        const subtitle = document.createElement("div");
+        subtitle.className = "step-subtitle";
+        subtitle.textContent = `${step.sectionTitle} – ${step.groupTitle}`;
+
+        titleWrap.appendChild(titleMain);
+        titleWrap.appendChild(subtitle);
+
+        const stats = getStepStats(step);
+        const statusDiv = document.createElement("div");
+        statusDiv.className = "step-progress";
+        statusDiv.textContent = `انجام شده: ${stats.done} از ${stats.total}`;
+
+        headerDiv.appendChild(titleWrap);
+        headerDiv.appendChild(statusDiv);
+
+        const progressBar = document.createElement("div");
+        progressBar.className = "progress-bar";
+        const progressFill = document.createElement("div");
+        progressFill.className = "progress-fill";
+        const percent = stats.total > 0 ? (stats.done / stats.total) * 100 : 0;
+        progressFill.style.width = percent + "%";
+        progressBar.appendChild(progressFill);
+
+        container.appendChild(headerDiv);
+        container.appendChild(progressBar);
+
+        step.items.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "option-card";
+            if (state.checks[item.id]) card.classList.add("selected");
+
+            const checkCircle = document.createElement("div");
+            checkCircle.className = "option-check";
+            checkCircle.textContent = state.checks[item.id] ? "✓" : "";
+
+            const textDiv = document.createElement("div");
+            textDiv.className = "option-text";
+            textDiv.textContent = item.text;
+
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "item-delete";
+            delBtn.textContent = "×";
+            delBtn.title = "حذف این مورد";
+
+            delBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                deleteItem(step.id, item.id);
+            });
+
+            card.addEventListener("click", () => {
+                const currentlyChecked = !!state.checks[item.id];
+                const wasCompleteBefore = isStepComplete(step);
+
+                state.checks[item.id] = !currentlyChecked;
+                saveState();
+
+                const isCompleteAfter = isStepComplete(step);
+
+                render();
+
+                if (!currentlyChecked && !wasCompleteBefore && isCompleteAfter) {
+                    setTimeout(() => {
+                        if (state.phase === "pre") {
+                            const list = getPreSteps();
+                            const lastIndex = list.length - 1;
+                            if (state.currentPreIndex < lastIndex) {
+                                state.currentPreIndex++;
+                            } else {
+                                state.phase = "flight";
+                            }
+                        } else if (state.phase === "post") {
+                            const list = getPostSteps();
+                            const lastIndex = list.length - 1;
+                            if (state.currentPostIndex < lastIndex) {
+                                state.currentPostIndex++;
+                            }
+                        }
+                        saveState();
+                        render();
+                    }, 300);
+                }
+            });
+
+            card.appendChild(checkCircle);
+            card.appendChild(textDiv);
+            card.appendChild(delBtn);
+            container.appendChild(card);
+        });
+
+        const addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "btn-add-item";
+        addBtn.textContent = "+ مورد جدید (کوتاه) به این مرحله";
+        addBtn.addEventListener("click", addItemToCurrentStep);
+        container.appendChild(addBtn);
+
+        const hint = document.createElement("div");
+        hint.className = "step-hint";
+        if (state.phase === "pre") {
+            hint.textContent = "مراحل «قبل از شروع» – موارد را سبز کن. بعد از اتمام همه مراحل، صفحه «آماده پرواز» نمایش داده می‌شود.";
+        } else {
+            hint.textContent = "مراحل «بعد از پایان عملیات» – تا همه سبز نشوند، مرحله بعد فعال نمی‌شود.";
+        }
+        container.appendChild(hint);
+
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const navButtons = document.getElementById("navButtons");
+
+        navButtons.style.display = "flex";
+
+        if (state.phase === "pre") {
+            prevBtn.disabled = state.currentPreIndex === 0;
+            const list = getPreSteps();
+            nextBtn.disabled = !isStepComplete(step);
+            if (state.currentPreIndex === list.length - 1 && !isStepComplete(step)) {
+                nextBtn.disabled = true;
+            }
+        } else if (state.phase === "post") {
+            prevBtn.disabled = state.currentPostIndex === 0;
+            const list = getPostSteps();
+            nextBtn.disabled = !isStepComplete(step) || state.currentPostIndex === list.length - 1;
+        }
+
+        updateGlobalProgress();
+    }
+
+    function renderFlightScreen() {
+        const container = document.getElementById("stepContainer");
+        container.innerHTML = "";
+
+        const wrap = document.createElement("div");
+        wrap.className = "flight-screen";
+
+        const title = document.createElement("div");
+        title.className = "flight-title";
+        title.textContent = "آمادهٔ پرواز – mehpash";
+
+        const subtitle = document.createElement("div");
+        subtitle.className = "flight-subtitle";
+        subtitle.textContent = "همه‌ی مراحل «قبل از شروع» انجام شده است. می‌توانی پرواز و سمپاشی را شروع کنی.";
+
+        const note1 = document.createElement("div");
+        note1.className = "flight-note";
+        note1.textContent = "در حین پرواز اگر ارتفاع، سرعت یا مسیر را عوض کردی، بعداً در «گزارش کار» ثبت کن.";
+
+        const note2 = document.createElement("div");
+        note2.className = "flight-note";
+        note2.textContent = "بعد از اتمام پرواز و فرود، دکمه زیر را بزن تا چک‌لیست «بعد از پایان عملیات» باز شود.";
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.id = "endFlightBtn";
+        btn.className = "flight-btn";
+        btn.textContent = "پایان پرواز – برو به مراحل بعد از کار";
+        btn.addEventListener("click", endFlight);
+
+        wrap.appendChild(title);
+        wrap.appendChild(subtitle);
+        wrap.appendChild(note1);
+        wrap.appendChild(note2);
+        wrap.appendChild(btn);
+
+        container.appendChild(wrap);
+
+        const navButtons = document.getElementById("navButtons");
+        navButtons.style.display = "none";
+
+        updateGlobalProgress();
+    }
+
+    function render() {
+        if (state.phase === "flight") {
+            renderFlightScreen();
+        } else {
+            renderStepScreen();
+        }
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", prevStep);
+    document.getElementById("nextBtn").addEventListener("click", nextStep);
+    document.getElementById("resetBtn").addEventListener("click", resetChecks);
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+    document.getElementById("projectName").addEventListener("change", saveProjectName);
+    document.getElementById("projectName").addEventListener("keyup", saveProjectName);
+
+    loadState();
+    render();
+
+    // ثبت Service Worker برای PWA
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("sw.js").catch(() => {});
+        });
+    }
+</script>
+</body>
+</html>
