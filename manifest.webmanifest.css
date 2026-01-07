@@ -1,0 +1,24 @@
+{
+  "name": "چک‌لیست پهپاد سمپاش - mehpash",
+  "short_name": "mehpash Drone",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#16a34a",
+  "description": "چک‌لیست مرحله‌ای قبل و بعد از سمپاشی با پهپاد - محصول mehpash",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
